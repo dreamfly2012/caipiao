@@ -1,4 +1,5 @@
 import scrapy
+from lottery.items import LotteryItem
 
 class LotterySpider(scrapy.Spider):
     name = "lottery"
@@ -10,12 +11,14 @@ class LotterySpider(scrapy.Spider):
     def parse(self, response):
         print("parse data...")
         data = response.css('#pagedata')
+
         for tr in data.css("tr"):
             td = tr.css("td")
-            yield{
-                    "periods":td[0].css("::text").get(),
-                    "nums1":td[1].css("::text").get(),
-                    "nums2":td[2].css("::text").get(),
-                    "nums3":td[3].css("::text").get()
-                    }
+            item = LotteryItem()
+            nums = td[3].css("::text").get()
+            item["period"]=td[1].css("::text").get()
+            item["num1"]= nums[0:1]
+            item["num2"]= nums[1:2]
+            item["num3"]= nums[2:3]
+            yield item
         pass
